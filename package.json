@@ -1,0 +1,16 @@
+{
+  "name": "dependency-time-machine",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@12.8.1",
+  "scripts": {
+  "dev": "docker compose up -d postgres && pnpm --filter web dev",
+  "db:up": "docker compose up -d postgres",
+  "db:down": "docker compose down",
+  "build": "pnpm --filter web build",
+  "lint": "pnpm --recursive lint",
+  "typecheck": "pnpm --recursive typecheck",
+  "test": "pnpm --recursive test"
+}
+}
+

@@ -1,0 +1,19 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: dtm
+      POSTGRES_PASSWORD: dtm
+      POSTGRES_DB: dtm
+    ports:
+      - "5432:5432"
+    volumes:
+      - dtm_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dtm -d dtm"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  dtm_postgres_data:
