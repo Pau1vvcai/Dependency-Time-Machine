@@ -15,6 +15,13 @@
       "when": 1790859694586,
       "tag": "0001_eager_jocasta",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792579160667,
+      "tag": "0002_equal_black_queen",
+      "breakpoints": true
     }
   ]
 }

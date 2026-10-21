@@ -1,4 +1,8 @@
-import { db, migrationRuns } from "@dependency-time-machine/database";
+import {
+  db,
+  migrationRuns,
+  runSteps,
+} from "@dependency-time-machine/database";
 import { StartMigrationInputSchema } from "@dependency-time-machine/shared";
 
 function normalizeRepositoryUrl(value: string): string {
@@ -60,14 +64,27 @@ export async function POST(request: Request) {
     );
   }
 
-  const [run] = await db
-    .insert(migrationRuns)
-    .values({
-      repositoryUrl,
-      targetFramework: parsed.data.targetFramework,
-      targetVersion: parsed.data.targetVersion,
-    })
-    .returning();
+  const run = await db.transaction(async (transaction) => {
+    const [createdRun] = await transaction
+      .insert(migrationRuns)
+      .values({
+        repositoryUrl,
+        targetFramework: parsed.data.targetFramework,
+        targetVersion: parsed.data.targetVersion,
+      })
+      .returning();
+
+    if (!createdRun) {
+      throw new Error("The migration run could not be created.");
+    }
+
+    await transaction.insert(runSteps).values({
+      runId: createdRun.id,
+      type: "CLONING",
+    });
+
+    return createdRun;
+  });
 
   return Response.json({ run }, { status: 201 });
 }

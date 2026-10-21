@@ -19,6 +19,11 @@ describe("migration run state machine", () => {
     expect(canTransition("DIAGNOSING", "PATCHING")).toBe(true);
   });
 
+  it("allows operational failures to enter reporting", () => {
+    expect(canTransition("CLONING", "REPORTING")).toBe(true);
+    expect(canTransition("BASELINE_TESTING", "REPORTING")).toBe(true);
+  });
+
   it("rejects skipping intermediate states", () => {
     expect(canTransition("QUEUED", "PLANNING")).toBe(false);
     expect(() => assertTransition("QUEUED", "PLANNING")).toThrow(

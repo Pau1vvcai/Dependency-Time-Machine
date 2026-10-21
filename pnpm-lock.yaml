@@ -240,11 +240,36 @@ importers:
         specifier: ^7.0.2
         version: 7.0.2
 
+  packages/executor:
+    dependencies:
+      '@dependency-time-machine/repository':
+        specifier: workspace:*
+        version: link:../repository
+    devDependencies:
+      '@types/node':
+        specifier: ^26.6.3
+        version: 26.6.3
+      tsx:
+        specifier: ^4.23.15
+        version: 4.23.15
+      typescript:
+        specifier: ^7.0.2
+        version: 7.0.2
+      vitest:
+        specifier: ^5.0.3
+        version: 5.0.3(@types/node@26.6.3)(vite@8.3.1(@types/node@26.6.3)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15))
+
   packages/orchestrator:
     dependencies:
       '@dependency-time-machine/database':
         specifier: workspace:*
         version: link:../database
+      '@dependency-time-machine/executor':
+        specifier: workspace:*
+        version: link:../executor
+      '@dependency-time-machine/repository':
+        specifier: workspace:*
+        version: link:../repository
       '@dependency-time-machine/shared':
         specifier: workspace:*
         version: link:../shared
@@ -252,9 +277,24 @@ importers:
         specifier: ^0.45.3
         version: 0.45.3(postgres@3.4.9)
     devDependencies:
+      '@types/node':
+        specifier: ^26.6.3
+        version: 26.6.3
       tsx:
         specifier: ^4.23.15
         version: 4.23.15
+      typescript:
+        specifier: ^7.0.2
+        version: 7.0.2
+      vitest:
+        specifier: ^5.0.3
+        version: 5.0.3(@types/node@26.6.3)(vite@8.3.1(@types/node@26.6.3)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15))
+
+  packages/repository:
+    devDependencies:
+      '@types/node':
+        specifier: ^26.6.3
+        version: 26.6.3
       typescript:
         specifier: ^7.0.2
         version: 7.0.2

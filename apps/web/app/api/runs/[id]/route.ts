@@ -1,6 +1,10 @@
-import { db, migrationRuns } from "@dependency-time-machine/database";
+import {
+  db,
+  migrationRuns,
+  runSteps,
+} from "@dependency-time-machine/database";
 import { RunIdSchema } from "@dependency-time-machine/shared";
-import { eq } from "drizzle-orm";
+import { asc, eq } from "drizzle-orm";
 
 export async function GET(
   _request: Request,
@@ -39,5 +43,11 @@ export async function GET(
     );
   }
 
-  return Response.json({ run });
+  const steps = await db
+    .select()
+    .from(runSteps)
+    .where(eq(runSteps.runId, run.id))
+    .orderBy(asc(runSteps.startedAt), asc(runSteps.id));
+
+  return Response.json({ run, steps });
 }

@@ -1,6 +1,10 @@
-import { db, migrationRuns } from "@dependency-time-machine/database";
+import {
+  db,
+  migrationRuns,
+  runSteps,
+} from "@dependency-time-machine/database";
 import { RunIdSchema } from "@dependency-time-machine/shared";
-import { eq } from "drizzle-orm";
+import { asc, eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 
@@ -24,12 +28,18 @@ export default async function RunDetailsPage({
     notFound();
   }
 
+  const steps = await db
+    .select()
+    .from(runSteps)
+    .where(eq(runSteps.runId, run.id))
+    .orderBy(asc(runSteps.startedAt), asc(runSteps.id));
+
   return (
     <main className="min-h-screen bg-slate-950 px-6 py-16 text-slate-100">
       <section className="mx-auto max-w-3xl">
         <Link href="/" className="text-sm text-cyan-400 hover:underline">
-  ← Back to home
-</Link>
+          ← Back to home
+        </Link>
 
         <div className="mt-8 flex items-center justify-between gap-4">
           <div>
@@ -72,6 +82,21 @@ export default async function RunDetailsPage({
             <dd className="mt-1">{run.attemptCount}</dd>
           </div>
         </dl>
+
+        <section className="mt-10">
+          <h2 className="text-xl font-semibold">Execution timeline</h2>
+          <ol className="mt-4 space-y-3">
+            {steps.map((step) => (
+              <li
+                key={step.id}
+                className="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-900 px-5 py-4"
+              >
+                <span className="font-medium">{step.type}</span>
+                <span className="text-sm text-slate-400">{step.status}</span>
+              </li>
+            ))}
+          </ol>
+        </section>
       </section>
     </main>
   );

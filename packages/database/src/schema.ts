@@ -1,6 +1,7 @@
 import { MIGRATION_RUN_STATUSES } from "@dependency-time-machine/shared";
 
 import {
+  boolean,
   integer,
   pgEnum,
   pgTable,
@@ -86,3 +87,57 @@ export type RunStep = typeof runSteps.$inferSelect;
 export type NewRunStep = typeof runSteps.$inferInsert;
 export type CommandRun = typeof commandRuns.$inferSelect;
 export type NewCommandRun = typeof commandRuns.$inferInsert;
+
+export const evidenceSources = pgTable("evidence_sources", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  runId: uuid("run_id")
+    .notNull()
+    .references(() => migrationRuns.id, { onDelete: "cascade" }),
+  url: text("url").notNull(),
+  domain: varchar("domain", { length: 255 }).notNull(),
+  title: text("title").notNull(),
+  excerpt: text("excerpt"),
+  retrievedAt: timestamp("retrieved_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+  contentHash: varchar("content_hash", { length: 64 }).notNull(),
+});
+
+export const artifacts = pgTable("artifacts", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  runId: uuid("run_id")
+    .notNull()
+    .references(() => migrationRuns.id, { onDelete: "cascade" }),
+  type: varchar("type", { length: 100 }).notNull(),
+  relativePath: text("relative_path").notNull(),
+  storageUri: text("storage_uri").notNull(),
+  contentHash: varchar("content_hash", { length: 64 }).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+});
+
+export const modelCalls = pgTable("model_calls", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  runId: uuid("run_id")
+    .notNull()
+    .references(() => migrationRuns.id, { onDelete: "cascade" }),
+  stepId: uuid("step_id")
+    .notNull()
+    .references(() => runSteps.id, { onDelete: "cascade" }),
+  provider: varchar("provider", { length: 100 }).notNull(),
+  model: varchar("model", { length: 255 }).notNull(),
+  promptVersion: varchar("prompt_version", { length: 100 }).notNull(),
+  inputTokens: integer("input_tokens"),
+  outputTokens: integer("output_tokens"),
+  latencyMs: integer("latency_ms"),
+  schemaValid: boolean("schema_valid").notNull(),
+  status: varchar("status", { length: 50 }).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+});
+
+export type EvidenceSource = typeof evidenceSources.$inferSelect;
+export type Artifact = typeof artifacts.$inferSelect;
+export type ModelCall = typeof modelCalls.$inferSelect;
